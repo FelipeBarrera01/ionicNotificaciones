@@ -1,12 +1,27 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { PushService } from '../services/push.service';
+import { OSNotificationPayload } from '@ionic-native/onesignal/ngx';
 
 @Component({
   selector: 'app-home',
   templateUrl: 'home.page.html',
   styleUrls: ['home.page.scss'],
 })
-export class HomePage {
+export class HomePage implements OnInit {
+  mensaje: OSNotificationPayload [] = [];
+  constructor(public servicio: PushService) {
 
-  constructor() {}
-
+  }
+  async ionViewWillEnter(){
+    this.mensaje=  await this.servicio.getMensajes();
+  }
+ngOnInit(){
+  this.servicio.pushListener.subscribe(noti =>{
+    this.mensaje.unshift(noti);
+  });
+}
+async borrarMensajes(){
+ await   this.servicio.borrarMensajes();
+ this.mensaje = [];
+}
 }
